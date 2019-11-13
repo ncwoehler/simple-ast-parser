@@ -1,14 +1,18 @@
-import de.nwoehler.ASTParser;
+package de.nwoehler;
+
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 class ASTParserTest {
 
     @Test
     public void testASTParsing() throws Exception {
         ASTParser parser = new ASTParser();
-        parser = "USE databse1";
+        parser.text = "USE databse1";
 
-        String call = parser.call();
+        String result = parser.call();
+        assertThat(result).isEqualTo(parser.text);
     }
 
 }

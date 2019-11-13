@@ -1,3 +1,5 @@
+package de.nwoehler;
+
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
@@ -17,17 +19,14 @@ public class ASTParser implements Callable<String> {
     @CommandLine.Option(names = { "-t", "--text" } , description = "The SQL commands to parse")
     String text;
 
-    public static void main(String... args) {
-        int exitCode = new CommandLine(new ASTParser()).execute(args);
-        System.exit(exitCode);
-    }
-
     @Override
     public String call() throws Exception {
         if (sqlFile == null && text == null) {
             throw new IllegalArgumentException("Neither SQL file nor text input are defined");
         }
         String sql = getSQLInput();
+
+        System.out.println(sql);
         return sql;
     }
 
