@@ -1,4 +1,4 @@
-package de.nwoehler;
+package de.nwoehler.parser;
 
 import de.nwoehler.model.expression.BinaryExpression;
 import de.nwoehler.model.expression.Expression;
