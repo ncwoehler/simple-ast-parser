@@ -1,4 +1,4 @@
-package de.nwoehler;
+package de.nwoehler.parser;
 
 import com.google.common.base.Splitter;
 import de.nwoehler.model.statement.*;
@@ -6,9 +6,9 @@ import de.nwoehler.model.statement.*;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-class StatementParser {
+public class StatementParser {
 
-    static StatementList parseStatementList(String input) {
+   public static StatementList parseStatementList(String input) {
         StatementList statementList = new StatementList();
 
         // Let's keep it simple, assume each SQL statement ends with a ;

@@ -1,6 +1,6 @@
 package de.nwoehler.model.statement;
 
-import de.nwoehler.ExpressionParser;
+import de.nwoehler.parser.ExpressionParser;
 import de.nwoehler.model.expression.Expression;
 import lombok.AllArgsConstructor;
 import lombok.Data;
