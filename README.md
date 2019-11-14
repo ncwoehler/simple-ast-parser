@@ -4,7 +4,7 @@ How to run the SQL parser:
 
 ```
 ./gradlew installDist 
- ./build/install/nrpe-demo/bin/nrpe-demo -f src/test/resources/operations.sql
+ ./build/install/rips-tech/bin/rips-tech -f src/test/resources/operations.sql
 ```
 
 # IT Infrastructure

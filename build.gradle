@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'io.freefair.lombok' version '4.1.4'
 }
 
 repositories {
@@ -14,6 +15,12 @@ dependencies {
 
     // Command line parsing (see https://picocli.info/)
     implementation 'info.picocli:picocli:4.0.4'
+
+    // https://mvnrepository.com/artifact/com.google.guava/guava
+    implementation 'com.google.guava:guava:28.1-jre'
+
+    compileOnly 'org.projectlombok:lombok:1.18.10'
+    annotationProcessor 'org.projectlombok:lombok:1.18.10'
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.5.2'
     testImplementation 'org.assertj:assertj-core:3.14.0'
