@@ -4,7 +4,6 @@ import com.google.common.io.Resources;
 import de.nwoehler.model.expression.AndExpression;
 import de.nwoehler.model.expression.BinaryExpression;
 import de.nwoehler.model.statement.*;
-import org.assertj.core.internal.bytebuddy.implementation.bind.annotation.IgnoreForBinding;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 

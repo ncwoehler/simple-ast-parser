@@ -1,50 +1,68 @@
 package de.nwoehler.parser;
 
-import com.google.common.base.Splitter;
-import de.nwoehler.model.statement.*;
+import de.nwoehler.model.expression.Expression;
+import de.nwoehler.model.statement.Statement;
+import lombok.AllArgsConstructor;
 
-import java.util.Locale;
-import java.util.regex.Pattern;
+import java.util.Iterator;
 
-public class StatementParser {
+@AllArgsConstructor
+abstract class StatementParser<T extends Statement> {
 
-   public static StatementList parseStatementList(String input) {
-        StatementList statementList = new StatementList();
+    private Iterator<String> iterator;
+    private int line;
 
-        // Let's keep it simple, assume each SQL statement ends with a ;
-        var statementLines = Splitter.on(";").trimResults().omitEmptyStrings().split(input);
-        int line = 1;
-        for (String statementLine : statementLines) {
-            // Split each SQL statement into its tokens
-            var tokens = Splitter.on(Pattern.compile("\\s+")).split(statementLine);
-            var tokenIterator = tokens.iterator();
-            if(!tokenIterator.hasNext()) {
-                // Skip empty statements
-                continue;
-            }
-            var statementIdentifier = tokenIterator.next().toUpperCase(Locale.ENGLISH);
-            Statement nextStatement;
-            switch (statementIdentifier) {
-                case "USE":
-                    nextStatement = new UseStatement(tokenIterator, line);
-                    break;
-                case "SELECT":
-                    nextStatement = new SelectStatement(tokenIterator, line);
-                    break;
-                case "INSERT":
-                    nextStatement = new InsertStatement(tokenIterator, line);
-                    break;
-                case "DELETE":
-                    nextStatement = new DeleteStatement(tokenIterator, line);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unknown statement " + statementIdentifier);
+    /**
+     * Parses the statement based on the provided token iterator.
+     *
+     * @return the statement
+     */
+    public abstract T parse();
 
-            }
-            statementList.getStatements().add(nextStatement);
-            line++;
+    /**
+     * Returns the statement identifier
+     *
+     * @return the statement identifier
+     */
+    abstract String getIdentifier();
+
+    /**
+     * Reads the next available token. Fails if no further token is available.
+     *
+     * @return the next token
+     */
+    String nextToken() {
+        if (!iterator.hasNext()) {
+            throw new IllegalArgumentException("Malformed " + getIdentifier() + " statement at line " + line);
         }
-        return statementList;
+        return iterator.next();
     }
 
+    /**
+     * For every provided token it reads the next available tolen and checks whether they match the expected token.
+     * Throws an error in case it does not match.
+     *
+     * @param expected the token(s) that are expected next
+     */
+    void expectToken(String... expected) {
+       for(String expectedToken : expected) {
+           var next = nextToken();
+           if (!expectedToken.equalsIgnoreCase(next)) {
+               throw new IllegalArgumentException("Malformed " + getIdentifier() + " statement at line " + line);
+           }
+       }
+    }
+
+    Expression parseExpression() {
+        return ExpressionParser.parseExpression(iterator, line);
+    }
+
+    /**
+     * Checks that no further token is available. Fails in case another token is available.
+     */
+    void expectEnd() {
+        if (iterator.hasNext()) {
+            throw new IllegalArgumentException("Malformed " + getIdentifier() + " statement at line " + line);
+        }
+    }
 }
