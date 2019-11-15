@@ -5,14 +5,14 @@ import de.nwoehler.model.expression.Expression;
 
 import java.util.Iterator;
 
-public class ExpressionParser {
+class ExpressionParser {
 
     private static final String[] OPERATORS = {
             "<",
             ">"
     };
 
-    public static Expression parseExpression(Iterator<String> tokenIterator, int line) {
+    static Expression parseExpression(Iterator<String> tokenIterator, int line) {
         // https://de.wikipedia.org/wiki/Shunting-yard-Algorithmus ?
 
         // TODO better parsing

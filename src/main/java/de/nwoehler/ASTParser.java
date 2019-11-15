@@ -1,7 +1,9 @@
 package de.nwoehler;
 
+import com.google.common.base.Splitter;
+import de.nwoehler.model.statement.Statement;
 import de.nwoehler.model.statement.StatementList;
-import de.nwoehler.parser.StatementParser;
+import de.nwoehler.parser.Statements;
 import lombok.Data;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -11,6 +13,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.concurrent.Callable;
+import java.util.regex.Pattern;
 
 @Data
 @Command(name = "parseSQL", mixinStandardHelpOptions = true, version = "parse 0.1",
@@ -33,11 +36,30 @@ public class ASTParser implements Callable<StatementList> {
             throw new IllegalArgumentException("Failed to parse AST. Provided input is empty.");
         }
 
-        var statements = StatementParser.parseStatementList(sqlInput);
+        var statements = parse(sqlInput);
 
         // TODO write output to stdout
 
         return statements;
+    }
+
+    private StatementList parse(String sqlInput) {
+        StatementList statementList = new StatementList();
+
+        // Let's keep it simple, assume each SQL statement ends with a ;
+        var statementLines = Splitter.on(";").trimResults().omitEmptyStrings().split(sqlInput);
+        int line = 1;
+        for (String statementLine : statementLines) {
+            // Split each SQL statement into its tokens
+            var tokens = Splitter.on(Pattern.compile("\\s+")).split(statementLine);
+            var tokenIterator = tokens.iterator();
+            Statement nextStatement = Statements.parse(tokenIterator, line);
+            if(nextStatement != null) {
+                statementList.getStatements().add(nextStatement);
+            }
+            line++;
+        }
+        return statementList;
     }
 
     private String getSQLInput() throws IOException {
