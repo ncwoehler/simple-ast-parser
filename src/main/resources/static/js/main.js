@@ -75,12 +75,14 @@ function transformStatements(obj) {
             return value !== "type"
         }).map(function (key) {
             return transformObject(obj[key], key);
+        }).filter(function (value) {
+            return value !== null
         })
     }
 }
 
 function transformObject(obj, key) {
-    if (typeof obj === 'object') {
+    if (obj && typeof obj === 'object') {
         const objectKeys = Object.keys(obj);
         return {
             text: {name: key},
@@ -88,10 +90,12 @@ function transformObject(obj, key) {
                 return transformObject(obj[key], key);
             })
         }
-    } else {
+    }  else if(obj) {
         return {
             text: {name: obj}
         }
+    } else {
+        return null
     }
 }
 

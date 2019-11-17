@@ -27,10 +27,17 @@ class SelectStatementParser extends StatementParser<SelectStatement> {
         }
         var selectClause = new SelectClause(columns);
         var fromClause = new FromClause(tokenIterator.nextToken());
-        tokenIterator.expectToken("WHERE");
-        var whereClause = new WhereClause(PredicateParser.parse(tokenIterator));
-        tokenIterator.expectToken("ORDER", "BY");
-        var orderByClause = new OrderByClause(tokenIterator.nextToken());
+        nextToken = tokenIterator.nextToken(false);
+        WhereClause whereClause = null;
+        if ("WHERE".equalsIgnoreCase(nextToken)) {
+            whereClause = new WhereClause(PredicateParser.parse(tokenIterator));
+            nextToken = tokenIterator.nextToken(false);
+        }
+        OrderByClause orderByClause = null;
+        if ("ORDER".equalsIgnoreCase(nextToken)) {
+            tokenIterator.expectToken("BY");
+            orderByClause = new OrderByClause(tokenIterator.nextToken());
+        }
         tokenIterator.expectEnd();
         return new SelectStatement(selectClause, fromClause, whereClause, orderByClause);
     }

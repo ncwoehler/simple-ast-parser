@@ -11,15 +11,28 @@ public class TokenIterator {
     private int line;
 
     /**
+     * Retrieves next token
+     *
+     * @param failOnEmpty if true the method will fail if not token is available, otherwise null will be returned
+     * @return the token or null
+     */
+    public String nextToken(boolean failOnEmpty) {
+        if (!iterator.hasNext()) {
+            if (failOnEmpty) {
+                throw new IllegalArgumentException(getErrorMessage("Unexpected end of statement."));
+            }
+            return null;
+        }
+        return iterator.next();
+    }
+
+    /**
      * Reads the next available token. Fails if no further token is available.
      *
      * @return the next token
      */
     public String nextToken() {
-        if (!iterator.hasNext()) {
-            throw new IllegalArgumentException(getErrorMessage("Unexpected end of statement."));
-        }
-        return iterator.next();
+        return nextToken(true);
     }
 
     /**
