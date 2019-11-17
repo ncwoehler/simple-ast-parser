@@ -12,8 +12,13 @@ import lombok.EqualsAndHashCode;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class SelectStatement extends Statement {
-    private final SelectClause selectClause;
-    private final FromClause fromClause;
-    private final WhereClause whereClause;
-    private final OrderByClause orderByClause;
+    private final SelectClause select;
+    private final FromClause from;
+    private final WhereClause where;
+    private final OrderByClause orderBy;
+
+    @Override
+    public String getType() {
+        return "SELECT";
+    }
 }

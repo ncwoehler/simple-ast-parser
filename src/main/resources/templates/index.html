@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Simple AST parser</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/Treant.css}"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script
+            src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/styles/default.min.css">
+    <link rel="stylesheet"
+          href="https://highlightjs.org/static/demo/styles/darkula.css">
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.13/vue.js"></script>
+
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+    <div class="container">
+        <a class="navbar-brand" href="#">Simple AST parser</a>
+    </div>
+</nav>
+
+<!-- Page Content -->
+<main class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="container">
+                <div style="padding-top: 50px">
+                    <form class="form-horizontal" id="parse-form">
+                        <div class="form-group form-group-lg">
+                            <div class="col-sm-10">
+                                <h4>SQL input</h4>
+                                <div id="editor" class="editor-holder">
+                                    <textarea ref="editor" v-model="query" class="editor" autocomplete="off"
+                                              autocorrect="off" autocapitalize="off" spellcheck="false"
+                                              id="sqlInput"></textarea>
+                                    <pre><code ref="code" class="syntax-highlight sql">{{ query }}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button type="submit" id="btn-parse"
+                                        class="btn btn-primary btn-lg">Parse AST
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <div style="padding-top: 20px;">
+                        <h4>Result</h4>
+                        <div id="feedback">
+                            No results yet
+                        </div>
+                        <div id="tree-simple"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="sticky-footer">
+    <p style="padding-left: 30px">
+        © <a href="https://github.com/ncwoehler">Nils Wöhler</a> 2019
+    </p>
+</footer>
+
+<script type="text/javascript" src="js/Treant.js"></script>
+<script type="text/javascript" src="js/raphael.js"></script>
+<script type="text/javascript" src="js/main.js"></script>
+</body>
+
+</html>

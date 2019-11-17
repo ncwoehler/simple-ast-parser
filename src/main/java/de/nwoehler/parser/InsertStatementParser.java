@@ -37,8 +37,15 @@ class InsertStatementParser extends StatementParser<InsertStatement> {
             throw new IllegalArgumentException(tokenIterator.getErrorMessage());
         }
         while (!columnToken.equalsIgnoreCase("VALUES")) {
-            columns.add(sanitizeColumn(columnToken));
+            var sanitizedColumn = sanitizeColumn(columnToken);
             columnToken = tokenIterator.nextToken();
+            if (sanitizedColumn.isBlank()) {
+                continue;
+            }
+            columns.add(sanitizedColumn);
+        }
+        if (columns.isEmpty()) {
+            throw new IllegalArgumentException(tokenIterator.getErrorMessage("No columns defined"));
         }
         return columns;
     }
