@@ -11,5 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class UseStatement extends Statement {
-    private UseClause useClause;
+    private UseClause use;
+
+    @Override
+    public String getType() {
+        return "USE";
+    }
 }

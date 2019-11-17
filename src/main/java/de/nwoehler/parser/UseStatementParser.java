@@ -11,7 +11,7 @@ class UseStatementParser extends StatementParser<UseStatement> {
     @Override
     public UseStatement parse(TokenIterator tokenIterator) {
         UseStatement useStatement = new UseStatement();
-        useStatement.setUseClause(new UseClause(tokenIterator.nextToken()));
+        useStatement.setUse(new UseClause(tokenIterator.nextToken()));
         tokenIterator.expectEnd();
         return useStatement;
     }

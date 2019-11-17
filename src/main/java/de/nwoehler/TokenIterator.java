@@ -54,7 +54,7 @@ public class TokenIterator {
         return getErrorMessage("");
     }
 
-    String getErrorMessage(String reason) {
+    public String getErrorMessage(String reason) {
         return "Malformed statement at line " + line + ". " + reason;
     }
 

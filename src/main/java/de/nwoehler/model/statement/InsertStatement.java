@@ -10,6 +10,11 @@ import lombok.EqualsAndHashCode;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class InsertStatement extends Statement {
-    private final IntoClause intoClause;
-    private final ValuesClause valuesClause;
+    private final IntoClause into;
+    private final ValuesClause values;
+
+    @Override
+    public String getType() {
+        return "INSERT";
+    }
 }

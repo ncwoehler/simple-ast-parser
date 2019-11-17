@@ -10,6 +10,11 @@ import lombok.EqualsAndHashCode;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class DeleteStatement extends Statement {
-    private final FromClause fromClause;
-    private final WhereClause whereClause;
+    private final FromClause from;
+    private final WhereClause where;
+
+    @Override
+    public String getType() {
+        return "DELETE";
+    }
 }

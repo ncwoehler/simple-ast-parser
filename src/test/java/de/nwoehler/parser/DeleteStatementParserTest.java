@@ -1,6 +1,6 @@
 package de.nwoehler.parser;
 
-import de.nwoehler.ASTParser;
+import de.nwoehler.SQLParser;
 import de.nwoehler.model.clause.FromClause;
 import de.nwoehler.model.clause.WhereClause;
 import de.nwoehler.model.predicate.AndPredicate;
@@ -15,9 +15,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 class DeleteStatementParserTest {
 
     @Test
-    void simpleStatement() throws Exception {
-        ASTParser parser = new ASTParser();
-        parser.setText("DELETE FROM databse1.logs WHERE id < 100;");
+    void simpleStatement() {
+        SQLParser parser = new SQLParser("DELETE FROM databse1.logs WHERE id < 100;");
 
         StatementList result = parser.call();
         assertThat(result.getStatements().get(0)).isEqualTo(
@@ -30,9 +29,8 @@ class DeleteStatementParserTest {
 
     @Disabled("Not implemented")
     @Test
-    void withAndClause() throws Exception {
-        ASTParser parser = new ASTParser();
-        parser.setText("DELETE FROM databse1.logs WHERE id < 100 AND count > 1;");
+    void withAndClause() {
+        SQLParser parser = new SQLParser("DELETE FROM databse1.logs WHERE id < 100 AND count > 1;");
 
         StatementList result = parser.call();
         assertThat(result.getStatements().get(0)).isEqualTo(

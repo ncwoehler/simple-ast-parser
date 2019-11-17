@@ -4,40 +4,32 @@ import com.google.common.base.Splitter;
 import de.nwoehler.model.statement.StatementList;
 import de.nwoehler.parser.Statements;
 import lombok.Data;
-import picocli.CommandLine;
-import picocli.CommandLine.Command;
+import lombok.NoArgsConstructor;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.concurrent.Callable;
 import java.util.regex.Pattern;
 
 @Data
-@Command(name = "parseSQL", mixinStandardHelpOptions = true, version = "parse 0.1",
-        description = "Parses the AST from an SQL file and prints it to the command line")
-public class ASTParser implements Callable<String> {
+@NoArgsConstructor
+public class SQLParser implements Callable<StatementList> {
 
-    @CommandLine.Option(names = {"-f", "--file"}, description = "The SQL file to parse")
-    private File sqlFile;
-
-    @CommandLine.Option(names = {"-t", "--text"}, description = "The SQL commands to parse")
     private String text;
 
+    public SQLParser(String text) {
+        this.text = text;
+    }
+
     @Override
-    public String call() throws Exception {
-        if (sqlFile == null && text == null) {
+    public StatementList call() {
+        if (text == null) {
             throw new IllegalArgumentException("Neither SQL file nor text input are defined");
         }
-        String sqlInput = getSQLInput();
+        String sqlInput = text;
         if (sqlInput.strip().isBlank()) {
             throw new IllegalArgumentException("Failed to parse AST. Provided input is empty.");
         }
 
-        var statements = parse(sqlInput);
-
-        return statements.toString();
+        return parse(sqlInput);
     }
 
     private StatementList parse(String sqlInput) {
@@ -61,12 +53,4 @@ public class ASTParser implements Callable<String> {
         return statementList;
     }
 
-    private String getSQLInput() throws IOException {
-        // prefer file input over text input
-        if (sqlFile != null) {
-            byte[] fileContents = Files.readAllBytes(sqlFile.toPath());
-            return new String(fileContents, StandardCharsets.UTF_8);
-        }
-        return text;
-    }
 }

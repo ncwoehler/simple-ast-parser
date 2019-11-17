@@ -10,4 +10,10 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public class StatementList extends Statement {
     private List<Statement> statements = new ArrayList<>();
+
+
+    @Override
+    public String getType() {
+        return "STATEMENTS";
+    }
 }

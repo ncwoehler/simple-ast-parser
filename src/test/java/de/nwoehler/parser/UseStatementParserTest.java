@@ -1,6 +1,6 @@
 package de.nwoehler.parser;
 
-import de.nwoehler.ASTParser;
+import de.nwoehler.SQLParser;
 import de.nwoehler.model.clause.UseClause;
 import de.nwoehler.model.statement.StatementList;
 import de.nwoehler.model.statement.UseStatement;
@@ -12,8 +12,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 class UseStatementParserTest {
 
     @Test
-    void simpleStatement() throws Exception {
-        ASTParser parser = new ASTParser();
+    void simpleStatement() {
+        SQLParser parser = new SQLParser();
         parser.setText("USE databse1;");
 
         StatementList result = parser.call();
@@ -22,15 +22,15 @@ class UseStatementParserTest {
 
     @Test
     void malformed() {
-        ASTParser parser = new ASTParser();
+        SQLParser parser = new SQLParser();
         parser.setText("USE databse1 as;");
 
         assertThatThrownBy(parser::call).isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    void noTrailingSemicolon() throws Exception {
-        ASTParser parser = new ASTParser();
+    void noTrailingSemicolon() {
+        SQLParser parser = new SQLParser();
         parser.setText("USE databse1");
 
         StatementList result = parser.call();
