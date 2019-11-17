@@ -1,7 +1,11 @@
 package de.nwoehler.parser;
 
 import de.nwoehler.ASTParser;
-import de.nwoehler.model.expression.BinaryExpression;
+import de.nwoehler.model.clause.FromClause;
+import de.nwoehler.model.clause.OrderByClause;
+import de.nwoehler.model.clause.SelectClause;
+import de.nwoehler.model.clause.WhereClause;
+import de.nwoehler.model.predicate.BinaryPredicate;
 import de.nwoehler.model.statement.SelectStatement;
 import de.nwoehler.model.statement.StatementList;
 import org.junit.jupiter.api.Test;
@@ -20,10 +24,10 @@ class SelectStatementParserTest {
         StatementList result = parser.call();
         assertThat(result.getStatements().get(0)).isEqualTo(
                 new SelectStatement(
-                        Arrays.asList("id", "name"),
-                        "table1",
-                        new BinaryExpression("id", "<", "100"),
-                        "created"
+                        new SelectClause(Arrays.asList("id", "name")),
+                        new FromClause("table1"),
+                        new WhereClause(new BinaryPredicate("id", "<", "100")),
+                        new OrderByClause("created")
                 )
         );
     }

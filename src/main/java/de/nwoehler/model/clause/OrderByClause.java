@@ -1,4 +1,4 @@
-package de.nwoehler.model.literal;
+package de.nwoehler.model.clause;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class StringLiteral extends Literal  {
-    private String value;
+public class OrderByClause {
+    private String orderedBy;
 }

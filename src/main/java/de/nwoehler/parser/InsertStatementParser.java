@@ -1,10 +1,13 @@
 package de.nwoehler.parser;
 
+import com.google.common.collect.ImmutableMap;
 import de.nwoehler.TokenIterator;
-import de.nwoehler.model.literal.FunctionLiteral;
-import de.nwoehler.model.literal.Literal;
-import de.nwoehler.model.literal.NumberLiteral;
-import de.nwoehler.model.literal.StringLiteral;
+import de.nwoehler.model.clause.IntoClause;
+import de.nwoehler.model.clause.ValuesClause;
+import de.nwoehler.model.function.DateFunction;
+import de.nwoehler.model.function.Function;
+import de.nwoehler.model.function.NumberFunction;
+import de.nwoehler.model.function.StringFunction;
 import de.nwoehler.model.statement.InsertStatement;
 
 import java.text.NumberFormat;
@@ -20,13 +23,11 @@ class InsertStatementParser extends StatementParser<InsertStatement> {
 
     @Override
     public InsertStatement parse(TokenIterator tokenIterator) {
-        InsertStatement insertStatement = new InsertStatement();
         tokenIterator.expectToken("INTO");
-        insertStatement.setTable(tokenIterator.nextToken());
-        var columns = parseColumns(tokenIterator);
-        insertStatement.setColumnsToValues(parseValues(columns, tokenIterator));
+        var intoClause = new IntoClause(tokenIterator.nextToken());
+        var valuesClause = parseValuesClause(tokenIterator);
         tokenIterator.expectEnd();
-        return insertStatement;
+        return new InsertStatement(intoClause, valuesClause);
     }
 
     private List<String> parseColumns(TokenIterator tokenIterator) {
@@ -49,9 +50,10 @@ class InsertStatementParser extends StatementParser<InsertStatement> {
                 .replace(",", "");
     }
 
-    private Map<String, Literal> parseValues(List<String> columns, TokenIterator tokenIterator) {
+    private ValuesClause parseValuesClause(TokenIterator tokenIterator) {
+        var columns = parseColumns(tokenIterator);
         boolean firstValue = true;
-        Map<String, Literal> columnsToValues = new LinkedHashMap<>();
+        Map<String, Function> columnsToValues = new LinkedHashMap<>();
         for (int index = 0; index < columns.size(); index++) {
             String column = columns.get(index);
             String valueToken = tokenIterator.nextToken();
@@ -73,18 +75,18 @@ class InsertStatementParser extends StatementParser<InsertStatement> {
             valueToken = sanitizeValue(valueToken);
 
             if (valueToken.startsWith("\"")) {
-                columnsToValues.put(column, new StringLiteral(readStringValue(valueToken.substring(1), tokenIterator)));
+                columnsToValues.put(column, new StringFunction(readStringValue(valueToken.substring(1), tokenIterator)));
             } else if (valueToken.endsWith("()")) {
-                columnsToValues.put(column, new FunctionLiteral(valueToken));
+                columnsToValues.put(column, new DateFunction(valueToken));
             } else {
                 try {
-                    columnsToValues.put(column, new NumberLiteral(NumberFormat.getInstance().parse(valueToken)));
+                    columnsToValues.put(column, new NumberFunction(NumberFormat.getInstance().parse(valueToken)));
                 } catch (ParseException e) {
                     throw new IllegalArgumentException(tokenIterator.getErrorMessage());
                 }
             }
         }
-        return columnsToValues;
+        return new ValuesClause(ImmutableMap.copyOf(columnsToValues));
     }
 
     private String readStringValue(String firstToken, TokenIterator tokenIterator) {

@@ -1,7 +1,6 @@
 package de.nwoehler.parser;
 
 import de.nwoehler.TokenIterator;
-import de.nwoehler.model.expression.Expression;
 import de.nwoehler.model.statement.Statement;
 import lombok.AllArgsConstructor;
 
@@ -14,9 +13,5 @@ abstract class StatementParser<T extends Statement> {
      * @return the statement
      */
     public abstract T parse(TokenIterator iterator);
-
-    Expression parseExpression(TokenIterator iterator) {
-        return ExpressionParser.parseExpression(iterator);
-    }
 
 }

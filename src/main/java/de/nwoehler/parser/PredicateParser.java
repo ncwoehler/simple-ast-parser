@@ -1,12 +1,12 @@
 package de.nwoehler.parser;
 
 import de.nwoehler.TokenIterator;
-import de.nwoehler.model.expression.BinaryExpression;
-import de.nwoehler.model.expression.Expression;
+import de.nwoehler.model.predicate.BinaryPredicate;
+import de.nwoehler.model.predicate.Predicate;
 
-class ExpressionParser {
+class PredicateParser {
 
-    static Expression parseExpression(TokenIterator tokenIterator) {
+    static Predicate parse(TokenIterator tokenIterator) {
         var firstOperand = tokenIterator.nextToken();
         var operator = tokenIterator.nextToken();
         var secondOperand = tokenIterator.nextToken();
@@ -14,6 +14,6 @@ class ExpressionParser {
             operator += " " + secondOperand;
             secondOperand = tokenIterator.nextToken();
         }
-        return new BinaryExpression(firstOperand, operator, secondOperand);
+        return new BinaryPredicate(firstOperand, operator, secondOperand);
     }
 }

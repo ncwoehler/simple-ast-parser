@@ -1,11 +1,13 @@
 package de.nwoehler;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
-import de.nwoehler.model.expression.BinaryExpression;
-import de.nwoehler.model.literal.FunctionLiteral;
-import de.nwoehler.model.literal.Literal;
-import de.nwoehler.model.literal.NumberLiteral;
-import de.nwoehler.model.literal.StringLiteral;
+import de.nwoehler.model.clause.*;
+import de.nwoehler.model.predicate.BinaryPredicate;
+import de.nwoehler.model.function.DateFunction;
+import de.nwoehler.model.function.Function;
+import de.nwoehler.model.function.NumberFunction;
+import de.nwoehler.model.function.StringFunction;
 import de.nwoehler.model.statement.*;
 import org.junit.jupiter.api.Test;
 
@@ -26,24 +28,26 @@ class ASTParserTest {
 
         StatementList result = parser.call();
 
-        Map<String, Literal> columnsToValues = new LinkedHashMap<>();
-        columnsToValues.put("id", new NumberLiteral(1L));
-        columnsToValues.put("user_id", new NumberLiteral(1L));
-        columnsToValues.put("note", new StringLiteral("Note 1"));
-        columnsToValues.put("created", new FunctionLiteral("NOW()"));
+        Map<String, Function> columnsToValues = new LinkedHashMap<>();
+        columnsToValues.put("id", new NumberFunction(1L));
+        columnsToValues.put("user_id", new NumberFunction(1L));
+        columnsToValues.put("note", new StringFunction("Note 1"));
+        columnsToValues.put("created", new DateFunction("NOW()"));
 
         assertThat(result.getStatements()).containsExactly(
-                new UseStatement("database1"),
+                new UseStatement(new UseClause("database1")),
                 new SelectStatement(
-                        Arrays.asList("id", "name", "address"),
-                        "users",
-                        new BinaryExpression("is_customer", "IS NOT", "NULL"),
-                        "created"
+                        new SelectClause(Arrays.asList("id", "name", "address")),
+                        new FromClause("users"),
+                        new WhereClause(new BinaryPredicate("is_customer", "IS NOT", "NULL")),
+                        new OrderByClause("created")
                 ),
-                new InsertStatement("user_notes", columnsToValues),
+                new InsertStatement(
+                        new IntoClause("user_notes"),
+                        new ValuesClause(ImmutableMap.copyOf(columnsToValues))),
                 new DeleteStatement(
-                        "database2.logs",
-                        new BinaryExpression("id", "<", "1000")
+                        new FromClause("database2.logs"),
+                        new WhereClause(new BinaryPredicate("id", "<", "1000"))
                 )
         );
     }

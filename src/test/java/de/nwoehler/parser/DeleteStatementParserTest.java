@@ -1,8 +1,10 @@
 package de.nwoehler.parser;
 
 import de.nwoehler.ASTParser;
-import de.nwoehler.model.expression.AndExpression;
-import de.nwoehler.model.expression.BinaryExpression;
+import de.nwoehler.model.clause.FromClause;
+import de.nwoehler.model.clause.WhereClause;
+import de.nwoehler.model.predicate.AndPredicate;
+import de.nwoehler.model.predicate.BinaryPredicate;
 import de.nwoehler.model.statement.DeleteStatement;
 import de.nwoehler.model.statement.StatementList;
 import org.junit.jupiter.api.Disabled;
@@ -20,8 +22,8 @@ class DeleteStatementParserTest {
         StatementList result = parser.call();
         assertThat(result.getStatements().get(0)).isEqualTo(
                 new DeleteStatement(
-                        "databse1.logs",
-                        new BinaryExpression("id", "<", "100")
+                        new FromClause("databse1.logs"),
+                        new WhereClause(new BinaryPredicate("id", "<", "100"))
                 )
         );
     }
@@ -35,10 +37,12 @@ class DeleteStatementParserTest {
         StatementList result = parser.call();
         assertThat(result.getStatements().get(0)).isEqualTo(
                 new DeleteStatement(
-                        "databse1.logs",
-                        new AndExpression(
-                                new BinaryExpression("id", "100", "<"),
-                                new BinaryExpression("count", "1", ">")
+                        new FromClause("databse1.logs"),
+                        new WhereClause(
+                                new AndPredicate(
+                                        new BinaryPredicate("id", "100", "<"),
+                                        new BinaryPredicate("count", "1", ">")
+                                )
                         )
                 )
         );

@@ -1,4 +1,4 @@
-package de.nwoehler.model.expression;
+package de.nwoehler.model.function;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class BinaryExpression extends Expression {
-    private String operand1;
-    private String operator;
-    private String operand2;
+public class StringFunction extends Function {
+    private String value;
 }

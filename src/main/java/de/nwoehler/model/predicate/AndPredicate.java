@@ -1,4 +1,4 @@
-package de.nwoehler.model.literal;
+package de.nwoehler.model.predicate;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class FunctionLiteral extends Literal {
-    private String function;
+public class AndPredicate extends Predicate {
+    private Predicate leftPredicate;
+    private Predicate rightPredicate;
 }
