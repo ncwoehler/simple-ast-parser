@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 @Data
 @Command(name = "parseSQL", mixinStandardHelpOptions = true, version = "parse 0.1",
         description = "Parses the AST from an SQL file and prints it to the command line")
-public class ASTParser implements Callable<StatementList> {
+public class ASTParser implements Callable<String> {
 
     @CommandLine.Option(names = {"-f", "--file"}, description = "The SQL file to parse")
     private File sqlFile;
@@ -26,7 +26,7 @@ public class ASTParser implements Callable<StatementList> {
     private String text;
 
     @Override
-    public StatementList call() throws Exception {
+    public String call() throws Exception {
         if (sqlFile == null && text == null) {
             throw new IllegalArgumentException("Neither SQL file nor text input are defined");
         }
@@ -37,9 +37,7 @@ public class ASTParser implements Callable<StatementList> {
 
         var statements = parse(sqlInput);
 
-        // TODO write output to stdout
-
-        return statements;
+        return statements.toString();
     }
 
     private StatementList parse(String sqlInput) {
