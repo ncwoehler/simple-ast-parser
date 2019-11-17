@@ -1,7 +1,6 @@
 package de.nwoehler;
 
 import com.google.common.base.Splitter;
-import de.nwoehler.model.statement.Statement;
 import de.nwoehler.model.statement.StatementList;
 import de.nwoehler.parser.Statements;
 import lombok.Data;
@@ -20,10 +19,10 @@ import java.util.regex.Pattern;
         description = "Parses the AST from an SQL file and prints it to the command line")
 public class ASTParser implements Callable<StatementList> {
 
-    @CommandLine.Option(names = { "-f", "--file" } , description = "The SQL file to parse")
+    @CommandLine.Option(names = {"-f", "--file"}, description = "The SQL file to parse")
     private File sqlFile;
 
-    @CommandLine.Option(names = { "-t", "--text" } , description = "The SQL commands to parse")
+    @CommandLine.Option(names = {"-t", "--text"}, description = "The SQL commands to parse")
     private String text;
 
     @Override
@@ -52,11 +51,13 @@ public class ASTParser implements Callable<StatementList> {
         for (String statementLine : statementLines) {
             // Split each SQL statement into its tokens
             var tokens = Splitter.on(Pattern.compile("\\s+")).split(statementLine);
-            var tokenIterator = tokens.iterator();
-            Statement nextStatement = Statements.parse(tokenIterator, line);
-            if(nextStatement != null) {
-                statementList.getStatements().add(nextStatement);
+            // Skip empty statements
+            var iterator = tokens.iterator();
+            if (!iterator.hasNext()) {
+                continue;
             }
+            var tokenIterator = new TokenIterator(iterator, line);
+            statementList.getStatements().add(Statements.parse(tokenIterator));
             line++;
         }
         return statementList;

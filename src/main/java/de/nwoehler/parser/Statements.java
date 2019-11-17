@@ -1,36 +1,28 @@
 package de.nwoehler.parser;
 
+import com.google.common.collect.ImmutableMap;
+import de.nwoehler.TokenIterator;
 import de.nwoehler.model.statement.Statement;
 
-import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 
 public final class Statements {
 
-    public static Statement parse(Iterator<String> tokenIterator, int line) {
-        // Skip empty statements
-        if(!tokenIterator.hasNext()) {
-            return null;
-        }
-        var statementIdentifier = tokenIterator.next().toUpperCase(Locale.ENGLISH);
-        Statement nextStatement;
-        switch (statementIdentifier) {
-            case "USE":
-                nextStatement = new UseStatementParser(tokenIterator, line).parse();
-                break;
-            case "SELECT":
-                nextStatement = new SelectStatementParser(tokenIterator, line).parse();
-                break;
-            case "INSERT":
-                nextStatement = new InsertStatementParser(tokenIterator, line).parse();
-                break;
-            case "DELETE":
-                nextStatement = new DeleteStatementParser(tokenIterator, line).parse();
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown statement " + statementIdentifier);
+    private static final Map<String, StatementParser> PARSERS = ImmutableMap.
+            <String, StatementParser>builder()
+            .put("USE", new UseStatementParser())
+            .put("SELECT", new SelectStatementParser())
+            .put("INSERT", new InsertStatementParser())
+            .put("DELETE", new DeleteStatementParser())
+            .build();
 
+    public static Statement parse(TokenIterator tokenIterator) {
+        var statementIdentifier = tokenIterator.nextToken().toUpperCase(Locale.ENGLISH);
+        var statementParser = PARSERS.get(statementIdentifier);
+        if (statementParser == null) {
+            throw new IllegalArgumentException("Unknown statement " + statementIdentifier);
         }
-        return nextStatement;
+        return statementParser.parse(tokenIterator);
     }
 }
