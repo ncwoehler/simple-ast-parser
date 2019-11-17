@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 class SelectStatementParserTest {
 
@@ -79,6 +80,22 @@ class SelectStatementParserTest {
                         new OrderByClause("created")
                 )
         );
+    }
+
+    @Test
+    void statementWithMissingColumn() {
+        SQLParser parser = new SQLParser();
+        parser.setText("SELECT id, , name FROM table1 ORDER BY created;");
+
+        assertThatThrownBy(parser::call).isExactlyInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void statementWithMissingOrderBy() {
+        SQLParser parser = new SQLParser();
+        parser.setText("SELECT id, name FROM users  ORDER BY ;");
+
+        assertThatThrownBy(parser::call).isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
 }
