@@ -1,4 +1,4 @@
-package de.nwoehler.model.literal;
+package de.nwoehler.model.function;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class NumberLiteral extends Literal  {
+public class NumberFunction extends Function {
     private Number value;
 }

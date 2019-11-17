@@ -1,6 +1,7 @@
 package de.nwoehler.parser;
 
 import de.nwoehler.ASTParser;
+import de.nwoehler.model.clause.UseClause;
 import de.nwoehler.model.statement.StatementList;
 import de.nwoehler.model.statement.UseStatement;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,7 @@ class UseStatementParserTest {
         parser.setText("USE databse1;");
 
         StatementList result = parser.call();
-        assertThat(result.getStatements().get(0)).isEqualTo(new UseStatement("databse1"));
+        assertThat(result.getStatements().get(0)).isEqualTo(new UseStatement(new UseClause("databse1")));
     }
 
     @Test
@@ -33,7 +34,7 @@ class UseStatementParserTest {
         parser.setText("USE databse1");
 
         StatementList result = parser.call();
-        assertThat(result.getStatements().get(0)).isEqualTo(new UseStatement("databse1"));
+        assertThat(result.getStatements().get(0)).isEqualTo(new UseStatement(new UseClause("databse1")));
     }
 
 

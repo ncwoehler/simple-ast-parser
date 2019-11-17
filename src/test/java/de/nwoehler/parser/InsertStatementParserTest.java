@@ -1,10 +1,13 @@
 package de.nwoehler.parser;
 
+import com.google.common.collect.ImmutableMap;
 import de.nwoehler.ASTParser;
-import de.nwoehler.model.literal.FunctionLiteral;
-import de.nwoehler.model.literal.Literal;
-import de.nwoehler.model.literal.NumberLiteral;
-import de.nwoehler.model.literal.StringLiteral;
+import de.nwoehler.model.clause.IntoClause;
+import de.nwoehler.model.clause.ValuesClause;
+import de.nwoehler.model.function.DateFunction;
+import de.nwoehler.model.function.Function;
+import de.nwoehler.model.function.NumberFunction;
+import de.nwoehler.model.function.StringFunction;
 import de.nwoehler.model.statement.InsertStatement;
 import de.nwoehler.model.statement.StatementList;
 import org.junit.jupiter.api.Disabled;
@@ -24,12 +27,15 @@ class InsertStatementParserTest {
         parser.setText("INSERT INTO user_notes (id, user_id, note, created) VALUES (1, 1, \"Note 1\", NOW());");
 
         StatementList result = parser.call();
-        Map<String, Literal> columnsToValues = new LinkedHashMap<>();
-        columnsToValues.put("id", new NumberLiteral(1L));
-        columnsToValues.put("user_id", new NumberLiteral(1L));
-        columnsToValues.put("note", new StringLiteral("Note 1"));
-        columnsToValues.put("created", new FunctionLiteral("NOW()"));
-        var expected = new InsertStatement("user_notes", columnsToValues);
+        Map<String, Function> columnsToValues = new LinkedHashMap<>();
+        columnsToValues.put("id", new NumberFunction(1L));
+        columnsToValues.put("user_id", new NumberFunction(1L));
+        columnsToValues.put("note", new StringFunction("Note 1"));
+        columnsToValues.put("created", new DateFunction("NOW()"));
+        var expected = new InsertStatement(
+                new IntoClause("user_notes"),
+                new ValuesClause(ImmutableMap.copyOf(columnsToValues))
+        );
         assertThat(result.getStatements().get(0)).isEqualTo(expected);
     }
 
@@ -40,9 +46,11 @@ class InsertStatementParserTest {
         parser.setText("INSERT INTO user_notes (note) VALUES (\"Note   1\");");
 
         StatementList result = parser.call();
-        Map<String, Literal> columnsToValues = new LinkedHashMap<>();
-        columnsToValues.put("note", new StringLiteral("Note   1"));
-        var expected = new InsertStatement("user_notes", columnsToValues);
+        Map<String, Function> columnsToValues = new LinkedHashMap<>();
+        columnsToValues.put("note", new StringFunction("Note   1"));
+        var expected = new InsertStatement(
+                new IntoClause("user_notes"), new ValuesClause(ImmutableMap.copyOf(columnsToValues))
+        );
         assertThat(result.getStatements().get(0)).isEqualTo(expected);
     }
 
@@ -52,9 +60,12 @@ class InsertStatementParserTest {
         parser.setText("INSERT INTO user_notes (created) VALUES (NOW());");
 
         StatementList result = parser.call();
-        Map<String, Literal> columnsToValues = new LinkedHashMap<>();
-        columnsToValues.put("created", new FunctionLiteral("NOW()"));
-        var expected = new InsertStatement("user_notes", columnsToValues);
+        Map<String, Function> columnsToValues = new LinkedHashMap<>();
+        columnsToValues.put("created", new DateFunction("NOW()"));
+        var expected = new InsertStatement(
+                new IntoClause("user_notes"),
+                new ValuesClause(ImmutableMap.copyOf(columnsToValues))
+        );
         assertThat(result.getStatements().get(0)).isEqualTo(expected);
     }
 

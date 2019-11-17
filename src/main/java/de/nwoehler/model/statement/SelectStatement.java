@@ -1,21 +1,19 @@
 package de.nwoehler.model.statement;
 
-import de.nwoehler.model.expression.Expression;
+import de.nwoehler.model.clause.FromClause;
+import de.nwoehler.model.clause.OrderByClause;
+import de.nwoehler.model.clause.SelectClause;
+import de.nwoehler.model.clause.WhereClause;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class SelectStatement extends Statement {
-    private List<String> columns = new ArrayList<>();
-    private String table;
-    private Expression where;
-    private String orderedBy;
+    private final SelectClause selectClause;
+    private final FromClause fromClause;
+    private final WhereClause whereClause;
+    private final OrderByClause orderByClause;
 }

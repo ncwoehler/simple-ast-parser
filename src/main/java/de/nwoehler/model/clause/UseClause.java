@@ -1,6 +1,5 @@
-package de.nwoehler.model.statement;
+package de.nwoehler.model.clause;
 
-import de.nwoehler.model.clause.UseClause;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class UseStatement extends Statement {
-    private UseClause useClause;
+public class UseClause {
+    private String database;
 }
