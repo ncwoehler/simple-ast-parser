@@ -23,6 +23,11 @@ class SelectStatementParser extends StatementParser<SelectStatement> {
             // assume no columns contain a comma by default
             var columnToken = nextToken.replace(",", "");
             columns.add(columnToken);
+
+            if (columnToken.isBlank()) {
+                throw new IllegalArgumentException(tokenIterator.getErrorMessage());
+            }
+
             nextToken = tokenIterator.nextToken();
         }
         var selectClause = new SelectClause(columns);
