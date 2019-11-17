@@ -1,37 +1,28 @@
 package de.nwoehler.parser;
 
+import de.nwoehler.TokenIterator;
 import de.nwoehler.model.statement.SelectStatement;
-
-import java.util.Iterator;
 
 // Expected format for coding task:
 // SELECT column1, column2 FROM table WHERE {expression} ORDER BY column;
 class SelectStatementParser extends StatementParser<SelectStatement> {
 
-    SelectStatementParser(Iterator<String> tokens, int line) {
-        super(tokens, line);
-    }
-
     @Override
-    public SelectStatement parse() {
+    public SelectStatement parse(TokenIterator tokenIterator) {
         SelectStatement selectStatement = new SelectStatement();
-        String nextToken = nextToken();
+        String nextToken = tokenIterator.nextToken();
         while(!nextToken.equalsIgnoreCase("FROM")) {
             var columnToken = nextToken.replace(",", "");
             selectStatement.getColumns().add(columnToken);
-            nextToken = nextToken();
+            nextToken = tokenIterator.nextToken();
         }
-        selectStatement.setTable(nextToken());
-        expectToken("WHERE");
-        selectStatement.setWhere(parseExpression());
-        expectToken("ORDER", "BY");
-        selectStatement.setOrderedBy(nextToken());
-        expectEnd();
+        selectStatement.setTable(tokenIterator.nextToken());
+        tokenIterator.expectToken("WHERE");
+        selectStatement.setWhere(parseExpression(tokenIterator));
+        tokenIterator.expectToken("ORDER", "BY");
+        selectStatement.setOrderedBy(tokenIterator.nextToken());
+        tokenIterator.expectEnd();
         return selectStatement;
     }
 
-    @Override
-    String getIdentifier() {
-        return "SELECT";
-    }
 }

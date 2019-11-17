@@ -1,26 +1,107 @@
 package de.nwoehler.parser;
 
+import de.nwoehler.TokenIterator;
+import de.nwoehler.model.literal.FunctionLiteral;
+import de.nwoehler.model.literal.Literal;
+import de.nwoehler.model.literal.NumberLiteral;
+import de.nwoehler.model.literal.StringLiteral;
 import de.nwoehler.model.statement.InsertStatement;
-import de.nwoehler.model.statement.SelectStatement;
 
-import java.util.Iterator;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 // Expected format for coding task:
-// SELECT column1, column2 FROM table WHERE {expression} ORDER BY column;
+// INSERT INTO table1 (id, user_id, note, created) VALUES (1, 1, "Note 1", NOW());
 class InsertStatementParser extends StatementParser<InsertStatement> {
 
-    InsertStatementParser(Iterator<String> tokens, int line) {
-        super(tokens, line);
-    }
-
     @Override
-    public InsertStatement parse() {
+    public InsertStatement parse(TokenIterator tokenIterator) {
         InsertStatement insertStatement = new InsertStatement();
+        tokenIterator.expectToken("INTO");
+        insertStatement.setTable(tokenIterator.nextToken());
+        var columns = parseColumns(tokenIterator);
+        insertStatement.setColumnsToValues(parseValues(columns, tokenIterator));
+        tokenIterator.expectEnd();
         return insertStatement;
     }
 
-    @Override
-    String getIdentifier() {
-        return "INSERT";
+    private List<String> parseColumns(TokenIterator tokenIterator) {
+        List<String> columns = new ArrayList<>();
+        var columnToken = tokenIterator.nextToken();
+        if (!columnToken.startsWith("(")) {
+            throw new IllegalArgumentException(tokenIterator.getErrorMessage());
+        }
+        while (!columnToken.equalsIgnoreCase("VALUES")) {
+            columns.add(sanitizeColumn(columnToken));
+            columnToken = tokenIterator.nextToken();
+        }
+        return columns;
     }
+
+    private String sanitizeColumn(String input) {
+        return input
+                .replace("(", "")
+                .replace(")", "")
+                .replace(",", "");
+    }
+
+    private Map<String, Literal> parseValues(List<String> columns, TokenIterator tokenIterator) {
+        boolean firstValue = true;
+        Map<String, Literal> columnsToValues = new LinkedHashMap<>();
+        for (int index = 0; index < columns.size(); index++) {
+            String column = columns.get(index);
+            String valueToken = tokenIterator.nextToken();
+            if (firstValue) {
+                firstValue = false;
+                if (!valueToken.startsWith("(")) {
+                    throw new IllegalArgumentException(tokenIterator.getErrorMessage());
+                }
+                // strip ()) from first value
+                valueToken = valueToken.substring(1);
+            }
+            if (index == columns.size() - 1) {
+                if (!valueToken.endsWith(")")) {
+                    throw new IllegalArgumentException(tokenIterator.getErrorMessage());
+                }
+                // strip ) from last value
+                valueToken = valueToken.substring(0, valueToken.length() - 1);
+            }
+            valueToken = sanitizeValue(valueToken);
+
+            if (valueToken.startsWith("\"")) {
+                columnsToValues.put(column, new StringLiteral(readStringValue(valueToken.substring(1), tokenIterator)));
+            } else if (valueToken.endsWith("()")) {
+                columnsToValues.put(column, new FunctionLiteral(valueToken));
+            } else {
+                try {
+                    columnsToValues.put(column, new NumberLiteral(NumberFormat.getInstance().parse(valueToken)));
+                } catch (ParseException e) {
+                    throw new IllegalArgumentException(tokenIterator.getErrorMessage());
+                }
+            }
+        }
+        return columnsToValues;
+    }
+
+    private String readStringValue(String firstToken, TokenIterator tokenIterator) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(firstToken);
+        boolean stringEnd = false;
+        while (!stringEnd) {
+            String nextToken = sanitizeValue(tokenIterator.nextToken());
+            stringEnd = nextToken.endsWith("\"");
+            builder.append(" ");
+            builder.append(stringEnd ? nextToken.substring(0, nextToken.length() - 1) : nextToken);
+        }
+        return builder.toString();
+    }
+
+    private String sanitizeValue(String input) {
+        return input.replace(",", "");
+    }
+
 }
